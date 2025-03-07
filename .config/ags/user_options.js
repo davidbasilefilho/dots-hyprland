@@ -4,6 +4,9 @@
 //   options listed in this file will override the default ones in the above file
 
 const userConfigOptions = {
+    ai: {
+        defaultTemperature: 0,
+    }
 }
 
 export default userConfigOptions;
