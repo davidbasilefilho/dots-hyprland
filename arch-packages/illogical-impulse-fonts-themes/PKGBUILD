@@ -17,6 +17,7 @@ depends=(
   ttf-gabarito-git
   fish
   foot
+  ghostty
   starship
   kvantum
   kvantum-qt5
