@@ -25,18 +25,42 @@ excludes=(".config/hypr/custom" ".config/ags/user_options.js" ".config/hypr/hypr
 declare -A custom_file_map
 # Add your mappings here
 custom_file_map["arch-packages/illogical-impulse-zsh/.zshrc"]="$HOME/.zshrc"
+custom_file_map["arch-packages/illogical-impulse-zsh/.zprofile"]="$HOME/.zprofile"
+custom_file_map["Extras/swaylock/config"]="$XDG_CONFIG_HOME/swaylock/config"
 # Additional mappings can be added here
 
 # Debug information
 echo -e "${CYAN}Base directory: $base${RESET}"
 echo -e "${CYAN}Custom mappings defined:${RESET}"
+
+# Function to copy a specific file from custom mappings
+copy_custom_file() {
+    local src="$1"
+    local dest="$2"
+    local src_path="$base/$src"
+    
+    if [[ -f "$src_path" ]]; then
+        echo -e "${BLUE}Copying \"$src_path\" to \"$dest\"...${RESET}"
+        mkdir -p "$(dirname "$dest")"
+        cp -vf "$src_path" "$dest"
+        if [[ $? -eq 0 ]]; then
+            echo -e "${GREEN}Successfully copied file.${RESET}"
+        else
+            echo -e "${RED}Failed to copy file.${RESET}"
+        fi
+    else
+        echo -e "${RED}Source file not found at path: $src_path${RESET}"
+    fi
+}
+
+# Print and verify custom mappings
 for src in "${!custom_file_map[@]}"; do
     dest="${custom_file_map[$src]}"
     echo -e "${YELLOW}  $src -> $dest${RESET}"
     if [[ -f "$base/$src" ]]; then
-        echo -e "${GREEN}    Source file exists${RESET}"
+        echo -e "${GREEN}    Source file exists at $base/$src${RESET}"
     else
-        echo -e "${RED}    Source file not found${RESET}"
+        echo -e "${RED}    Source file not found at $base/$src${RESET}"
     fi
 done
 
@@ -339,24 +363,29 @@ for folder in "${folders[@]}"; do
     done
 done
 
-# Process custom file mappings - Make sure this is outside any conditional block
+# Process custom file mappings - Make this a separate section with clear success/failure output
 echo -e "${CYAN}_____________________________________________________${RESET}"
 echo -e "${MAGENTA}Processing custom file mappings:${RESET}"
+
 for src in "${!custom_file_map[@]}"; do
     dest="${custom_file_map[$src]}"
-    if [[ -f "$base/$src" ]]; then
-        echo -e "${BLUE}Copying \"$src\" to \"$dest\"...${RESET}"
-        mkdir -p "$(dirname "$dest")"
-        cp -f "$base/$src" "$dest"
-    else
-        echo -e "${RED}Warning: Source file \"$src\" not found at path: $base/$src${RESET}"
-        # Try to find the file in the repo
-        echo -e "${YELLOW}Looking for $src in the repository...${RESET}"
-        find "$base" -name "$(basename "$src")" -type f 2>/dev/null | while read -r found; do
-            echo -e "${GREEN}Found similar file: $found${RESET}"
-        done
-    fi
+    copy_custom_file "$src" "$dest"
 done
+
+# Execute a direct copy of the .zshrc file to ensure it works
+echo -e "${CYAN}_____________________________________________________${RESET}"
+echo -e "${MAGENTA}Direct copy of .zshrc file for testing:${RESET}"
+if [[ -f "$base/arch-packages/illogical-impulse-zsh/.zshrc" ]]; then
+    echo -e "${BLUE}Copying .zshrc directly...${RESET}"
+    cp -vf "$base/arch-packages/illogical-impulse-zsh/.zshrc" "$HOME/.zshrc"
+    if [[ $? -eq 0 ]]; then
+        echo -e "${GREEN}Successfully copied .zshrc file.${RESET}"
+    else
+        echo -e "${RED}Failed to copy .zshrc file. Error code: $?${RESET}"
+    fi
+else
+    echo -e "${RED}.zshrc file not found at $base/arch-packages/illogical-impulse-zsh/.zshrc${RESET}"
+fi
 
 echo -e "${GREEN}Done. You may exit now.${RESET}"
 
