@@ -21,13 +21,25 @@ RESET="\033[0m"
 folders=(".config" ".local/bin" ".local/share" ".local/state")
 excludes=(".config/hypr/custom" ".config/ags/user_options.js" ".config/hypr/hyprland.conf")
 
-# Define custom file mappings - source files relative to repo root, destination is absolute path
-declare -A custom_file_map
-# Add your mappings here
-custom_file_map["arch-packages/illogical-impulse-zsh/.zshrc"]="$HOME/.zshrc"
-custom_file_map["arch-packages/illogical-impulse-zsh/.zprofile"]="$HOME/.zprofile"
-custom_file_map["Extras/swaylock/config"]="$XDG_CONFIG_HOME/swaylock/config"
-# Additional mappings can be added here
+# Copy custom mappings function - executed at the end regardless of other operations
+copy_custom_mappings() {
+    echo -e "${CYAN}_____________________________________________________${RESET}"
+    echo -e "${MAGENTA}Processing custom file mappings:${RESET}"
+    
+    # Custom file mappings - directly defined here for reliability
+    echo -e "${BLUE}Copying .zshrc file...${RESET}"
+    local ZSHRC_SRC="$base/arch-packages/illogical-impulse-zsh/.zshrc"
+    local ZSHRC_DEST="$HOME/.zshrc"
+    if [[ -f "$ZSHRC_SRC" ]]; then
+        mkdir -p "$(dirname "$ZSHRC_DEST")"
+        cp -fv "$ZSHRC_SRC" "$ZSHRC_DEST"
+        echo -e "${GREEN}Successfully copied .zshrc${RESET}"
+    else
+        echo -e "${RED}Source file not found: $ZSHRC_SRC${RESET}"
+        # Debug - List the directory contents
+        ls -la "$base/arch-packages/illogical-impulse-zsh/"
+    fi
+}
 
 # Debug information
 echo -e "${CYAN}Base directory: $base${RESET}"
@@ -294,19 +306,8 @@ if ! git pull; then
     echo -e "${GREEN}New dotfiles have been copied. Cleaning up temporary folder...${RESET}"
     rm -rf "$temp_folder"
     
-    # Process custom file mappings from temp folder
-    echo -e "${CYAN}_____________________________________________________${RESET}"
-    echo -e "${MAGENTA}Processing custom file mappings from temp folder:${RESET}"
-    for src in "${!custom_file_map[@]}"; do
-        dest="${custom_file_map[$src]}"
-        if [[ -f "$temp_folder/$src" ]]; then
-            echo -e "${BLUE}Copying \"$src\" to \"$dest\"...${RESET}"
-            mkdir -p "$(dirname "$dest")"
-            cp -f "$temp_folder/$src" "$dest"
-        else
-            echo -e "${YELLOW}Warning: Source file \"$src\" not found in temp folder.${RESET}"
-        fi
-    done
+    # Process custom mappings even in the temp folder case
+    copy_custom_mappings
     
     echo -e "${GREEN}Done. You may exit now.${RESET}"
     exit 0
@@ -363,29 +364,8 @@ for folder in "${folders[@]}"; do
     done
 done
 
-# Process custom file mappings - Make this a separate section with clear success/failure output
-echo -e "${CYAN}_____________________________________________________${RESET}"
-echo -e "${MAGENTA}Processing custom file mappings:${RESET}"
-
-for src in "${!custom_file_map[@]}"; do
-    dest="${custom_file_map[$src]}"
-    copy_custom_file "$src" "$dest"
-done
-
-# Execute a direct copy of the .zshrc file to ensure it works
-echo -e "${CYAN}_____________________________________________________${RESET}"
-echo -e "${MAGENTA}Direct copy of .zshrc file for testing:${RESET}"
-if [[ -f "$base/arch-packages/illogical-impulse-zsh/.zshrc" ]]; then
-    echo -e "${BLUE}Copying .zshrc directly...${RESET}"
-    cp -vf "$base/arch-packages/illogical-impulse-zsh/.zshrc" "$HOME/.zshrc"
-    if [[ $? -eq 0 ]]; then
-        echo -e "${GREEN}Successfully copied .zshrc file.${RESET}"
-    else
-        echo -e "${RED}Failed to copy .zshrc file. Error code: $?${RESET}"
-    fi
-else
-    echo -e "${RED}.zshrc file not found at $base/arch-packages/illogical-impulse-zsh/.zshrc${RESET}"
-fi
+# Always copy custom mappings at the end of the script
+copy_custom_mappings
 
 echo -e "${GREEN}Done. You may exit now.${RESET}"
 
