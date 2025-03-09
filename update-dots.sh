@@ -21,37 +21,6 @@ RESET="\033[0m"
 folders=(".config" ".local/bin" ".local/share" ".local/state")
 excludes=(".config/hypr/custom" ".config/ags/user_options.js" ".config/hypr/hyprland.conf")
 
-# Function to directly copy important files regardless of modification status
-copy_important_files() {
-    echo -e "${CYAN}_____________________________________________________${RESET}"
-    echo -e "${MAGENTA}Directly copying important files...${RESET}"
-    
-    # FORCE COPY .zshrc - no questions asked
-    local ZSHRC_SRC="$base/arch-packages/illogical-impulse-zsh/.zshrc"
-    local ZSHRC_DEST="$HOME/.zshrc"
-    
-    echo -e "${BLUE}Force copying .zshrc to $ZSHRC_DEST...${RESET}"
-    rm -f "$ZSHRC_DEST"  # Remove old file first
-    cp -f "$ZSHRC_SRC" "$ZSHRC_DEST"
-    if [ $? -eq 0 ]; then
-        echo -e "${GREEN}Successfully force-copied .zshrc${RESET}"
-    else
-        echo -e "${RED}Failed to copy .zshrc${RESET}"
-    fi
-    
-    # Also handle other important files
-    if [[ -f "$base/arch-packages/illogical-impulse-zsh/.zprofile" ]]; then
-        echo -e "${BLUE}Copying .zprofile to $HOME/.zprofile...${RESET}"
-        cp -f "$base/arch-packages/illogical-impulse-zsh/.zprofile" "$HOME/.zprofile"
-    fi
-    
-    if [[ -f "$base/Extras/swaylock/config" ]]; then
-        echo -e "${BLUE}Copying swaylock config...${RESET}"
-        mkdir -p "$XDG_CONFIG_HOME/swaylock"
-        cp -f "$base/Extras/swaylock/config" "$XDG_CONFIG_HOME/swaylock/config"
-    fi
-}
-
 get_checksum() {
     # Get the checksum of a specific file
     local file="$1"
@@ -282,9 +251,6 @@ if ! git pull; then
     echo -e "${GREEN}New dotfiles have been copied. Cleaning up temporary folder...${RESET}"
     rm -rf "$temp_folder"
     
-    # Always copy important files like .zshrc even when using temp folder
-    copy_important_files
-    
     echo -e "${GREEN}Done. You may exit now.${RESET}"
     exit 0
 fi
@@ -340,8 +306,8 @@ for folder in "${folders[@]}"; do
     done
 done
 
-# Always copy important files like .zshrc, regardless of their modification status
-copy_important_files
+echo -e "${BLUE}Replacing .zshrc ...${RESET}"
+./fprce-copy-zshrc.sh
 
 echo -e "${GREEN}Done. You may exit now.${RESET}"
 
