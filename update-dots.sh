@@ -21,10 +21,6 @@ RESET="\033[0m"
 folders=(".config" ".local/bin")
 excludes=(".config/hypr/custom" ".config/ags/user_options.js" ".config/hypr/hyprland.conf")
 
-# Define custom files to destinations map
-declare -A custom_files_map
-custom_files_map["arch-packages/illogical-impulse-zsh/.zshrc"]="$HOME/.zshrc"
-
 get_checksum() {
     # Get the checksum of a specific file
     local file="$1"
@@ -255,6 +251,10 @@ if ! git pull; then
     echo -e "${GREEN}New dotfiles have been copied. Cleaning up temporary folder...${RESET}"
     rm -rf "$temp_folder"
     
+    # Run copy-custom-files.sh to map custom dotfiles
+    printf "\e[36m[$0]: Running copy-custom-files.sh to map custom dotfiles\e[0m\n"
+    v bash ./copy-custom-files.sh
+    
     echo -e "${GREEN}Done. You may exit now.${RESET}"
     exit 0
 fi
@@ -310,24 +310,9 @@ for folder in "${folders[@]}"; do
     done
 done
 
-# Process custom files map - backup existing files and copy custom files
-echo -e "${CYAN}_____________________________________________________${RESET}"
-echo -e "${MAGENTA}Processing custom files map:${RESET}"
-for src in "${!custom_files_map[@]}"; do
-    dest="${custom_files_map[$src]}"
-    echo -e "${BLUE}Mapping $src -> $dest${RESET}"
-    
-    # Backup existing file if it exists
-    if [[ -f "$dest" ]]; then
-        echo -e "${YELLOW}Backing up existing $dest to ${dest}.bak${RESET}"
-        cp -f "$dest" "${dest}.bak"
-    fi
-    
-    # Copy the custom file
-    echo -e "${GREEN}Copying $src to $dest${RESET}"
-    mkdir -p "$(dirname "$dest")"
-    cp -f "$base/$src" "$dest"
-done
+# Run copy-custom-files.sh to map custom dotfiles
+printf "\e[36m[$0]: Running copy-custom-files.sh to map custom dotfiles\e[0m\n"
+bash ./copy-custom-files.sh
 
 echo -e "${GREEN}Done. You may exit now.${RESET}"
 
