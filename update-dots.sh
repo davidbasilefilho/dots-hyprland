@@ -36,6 +36,40 @@ process_custom_mappings() {
         fi
     else
         echo -e "${RED}Warning: Custom file mapping script not found at $base/copy-custom-files.sh${RESET}"
+        
+        # Fallback - copy important custom files directly if the script is missing
+        echo -e "${YELLOW}Falling back to direct file copying for critical custom files${RESET}"
+        
+        # .zshrc
+        if [[ -f "$base/arch-packages/illogical-impulse-zsh/.zshrc" ]]; then
+            echo -e "${BLUE}Copying .zshrc to $HOME/.zshrc...${RESET}"
+            if [[ -f "$HOME/.zshrc" ]]; then
+                cp -f "$HOME/.zshrc" "$HOME/.zshrc.backup"
+                echo -e "${YELLOW}Created backup at $HOME/.zshrc.backup${RESET}"
+            fi
+            cp -fv "$base/arch-packages/illogical-impulse-zsh/.zshrc" "$HOME/.zshrc"
+        fi
+        
+        # .zprofile
+        if [[ -f "$base/arch-packages/illogical-impulse-zsh/.zprofile" ]]; then
+            echo -e "${BLUE}Copying .zprofile to $HOME/.zprofile...${RESET}"
+            if [[ -f "$HOME/.zprofile" ]]; then
+                cp -f "$HOME/.zprofile" "$HOME/.zprofile.backup"
+                echo -e "${YELLOW}Created backup at $HOME/.zprofile.backup${RESET}"
+            fi
+            cp -fv "$base/arch-packages/illogical-impulse-zsh/.zprofile" "$HOME/.zprofile"
+        fi
+        
+        # Swaylock config
+        if [[ -f "$base/Extras/swaylock/config" ]]; then
+            echo -e "${BLUE}Copying swaylock config to $XDG_CONFIG_HOME/swaylock/config...${RESET}"
+            mkdir -p "$XDG_CONFIG_HOME/swaylock"
+            if [[ -f "$XDG_CONFIG_HOME/swaylock/config" ]]; then
+                cp -f "$XDG_CONFIG_HOME/swaylock/config" "$XDG_CONFIG_HOME/swaylock/config.backup"
+                echo -e "${YELLOW}Created backup at $XDG_CONFIG_HOME/swaylock/config.backup${RESET}"
+            fi
+            cp -fv "$base/Extras/swaylock/config" "$XDG_CONFIG_HOME/swaylock/config"
+        fi
     fi
 }
 
@@ -44,34 +78,26 @@ check_custom_files_for_modifications() {
     echo -e "${CYAN}_____________________________________________________${RESET}"
     echo -e "${MAGENTA}Checking custom files for modifications...${RESET}"
     
-    # Read custom file mappings from copy-custom-files.sh
-    declare -A custom_mappings
-    if [[ -f "$base/copy-custom-files.sh" ]]; then
-        # Extract file mappings using a simple grep - this assumes the format matches the current script
-        while read -r line; do
-            if [[ $line =~ \[\"([^\"]+)\"\]=\"([^\"]+)\" ]]; then
-                src="${BASH_REMATCH[1]}"
-                dest="${BASH_REMATCH[2]}"
-                # Expand variables in the destination path
-                dest=$(eval echo "$dest")
-                custom_mappings["$src"]="$dest"
+    # Define custom mappings directly in the update script to ensure they're always available
+    declare -A custom_mappings=(
+        ["arch-packages/illogical-impulse-zsh/.zshrc"]="$HOME/.zshrc"
+        ["arch-packages/illogical-impulse-zsh/.zprofile"]="$HOME/.zprofile"
+        ["Extras/swaylock/config"]="$XDG_CONFIG_HOME/swaylock/config"
+    )
+    
+    # Check each custom file for modifications
+    for src in "${!custom_mappings[@]}"; do
+        dest="${custom_mappings[$src]}"
+        if [[ -f "$base/$src" && -f "$dest" ]]; then
+            base_checksum=$(get_checksum "$base/$src")
+            dest_checksum=$(get_checksum "$dest")
+            
+            if [[ $base_checksum != $dest_checksum ]]; then
+                modified_files+=("$src")
+                echo -e "${YELLOW}Custom file modified: $src -> $dest${RESET}"
             fi
-        done < <(grep -oP '\[\K"[^"]+"(?=\]=")' -A1 "$base/copy-custom-files.sh")
-        
-        # Check each custom file for modifications
-        for src in "${!custom_mappings[@]}"; do
-            dest="${custom_mappings[$src]}"
-            if [[ -f "$base/$src" && -f "$dest" ]]; then
-                base_checksum=$(get_checksum "$base/$src")
-                dest_checksum=$(get_checksum "$dest")
-                
-                if [[ $base_checksum != $dest_checksum ]]; then
-                    modified_files+=("$src")
-                    echo -e "${YELLOW}Custom file modified: $src -> $dest${RESET}"
-                fi
-            fi
-        done
-    fi
+        fi
+    done
 }
 
 get_checksum() {
