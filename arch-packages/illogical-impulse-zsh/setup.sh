@@ -5,7 +5,7 @@ post_install() {
   git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
 
 
-  rm -f ~/.zshrc
+  mv -f ~/.zshrc ~/.zshrc.bak
   cp -f .zshrc ~/.zshrc
 }
 
