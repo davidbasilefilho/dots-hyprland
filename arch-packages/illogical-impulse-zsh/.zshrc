@@ -123,3 +123,5 @@ fi
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 
 alias ls="eza -lah --git --icons auto"
+
+echo "testing update script..."
