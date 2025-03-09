@@ -21,6 +21,12 @@ RESET="\033[0m"
 folders=(".config" ".local/bin" ".local/share" ".local/state")
 excludes=(".config/hypr/custom" ".config/ags/user_options.js" ".config/hypr/hyprland.conf")
 
+# Define custom file mappings - source files relative to repo root, destination is absolute path
+declare -A custom_file_map
+# Add your mappings here
+custom_file_map["arch-packages/illogical-impulse-zsh/.zshrc"]="$HOME/.zshrc"
+# Additional mappings can be added here
+
 get_checksum() {
     # Get the checksum of a specific file
     local file="$1"
@@ -249,6 +255,20 @@ if ! git pull; then
     
     echo -e "${GREEN}New dotfiles have been copied. Cleaning up temporary folder...${RESET}"
     rm -rf "$temp_folder"
+    
+    # Process custom file mappings from temp folder
+    echo -e "${MAGENTA}Processing custom file mappings from temp folder:${RESET}"
+    for src in "${!custom_file_map[@]}"; do
+        dest="${custom_file_map[$src]}"
+        if [[ -f "$temp_folder/$src" ]]; then
+            echo -e "${BLUE}Copying \"$src\" to \"$dest\"...${RESET}"
+            mkdir -p "$(dirname "$dest")"
+            cp -f "$temp_folder/$src" "$dest"
+        else
+            echo -e "${YELLOW}Warning: Source file \"$src\" not found in temp folder.${RESET}"
+        fi
+    done
+    
     echo -e "${GREEN}Done. You may exit now.${RESET}"
     exit 0
 fi
@@ -302,6 +322,20 @@ for folder in "${folders[@]}"; do
             cp -f "$base/$file" "$destination"
         fi
     done
+done
+
+# Process custom file mappings
+echo -e "${CYAN}_____________________________________________________${RESET}"
+echo -e "${MAGENTA}Processing custom file mappings:${RESET}"
+for src in "${!custom_file_map[@]}"; do
+    dest="${custom_file_map[$src]}"
+    if [[ -f "$base/$src" ]]; then
+        echo -e "${BLUE}Copying \"$src\" to \"$dest\"...${RESET}"
+        mkdir -p "$(dirname "$dest")"
+        cp -f "$base/$src" "$dest"
+    else
+        echo -e "${YELLOW}Warning: Source file \"$src\" not found.${RESET}"
+    fi
 done
 
 echo -e "${GREEN}Done. You may exit now.${RESET}"
