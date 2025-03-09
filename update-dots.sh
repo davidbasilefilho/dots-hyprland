@@ -39,6 +39,41 @@ process_custom_mappings() {
     fi
 }
 
+# Function to check custom files for modifications
+check_custom_files_for_modifications() {
+    echo -e "${CYAN}_____________________________________________________${RESET}"
+    echo -e "${MAGENTA}Checking custom files for modifications...${RESET}"
+    
+    # Read custom file mappings from copy-custom-files.sh
+    declare -A custom_mappings
+    if [[ -f "$base/copy-custom-files.sh" ]]; then
+        # Extract file mappings using a simple grep - this assumes the format matches the current script
+        while read -r line; do
+            if [[ $line =~ \[\"([^\"]+)\"\]=\"([^\"]+)\" ]]; then
+                src="${BASH_REMATCH[1]}"
+                dest="${BASH_REMATCH[2]}"
+                # Expand variables in the destination path
+                dest=$(eval echo "$dest")
+                custom_mappings["$src"]="$dest"
+            fi
+        done < <(grep -oP '\[\K"[^"]+"(?=\]=")' -A1 "$base/copy-custom-files.sh")
+        
+        # Check each custom file for modifications
+        for src in "${!custom_mappings[@]}"; do
+            dest="${custom_mappings[$src]}"
+            if [[ -f "$base/$src" && -f "$dest" ]]; then
+                base_checksum=$(get_checksum "$base/$src")
+                dest_checksum=$(get_checksum "$dest")
+                
+                if [[ $base_checksum != $dest_checksum ]]; then
+                    modified_files+=("$src")
+                    echo -e "${YELLOW}Custom file modified: $src -> $dest${RESET}"
+                fi
+            fi
+        done
+    fi
+}
+
 get_checksum() {
     # Get the checksum of a specific file
     local file="$1"
@@ -57,24 +92,31 @@ file_in_excludes() {
 }
 
 get_destination() {
-	# Get the correct destination of the file based on XDG base dirs
-	local file="$1"
-	local localdir="$(echo $file | cut -d/ -f1-2)"
-	local everything_else="$(echo $file | cut -d/ -f3-)"
-	# Check if path is config
-	if [ "$(echo $file | cut -d/ -f1)" = ".config" ]; then
-		printf "$XDG_CONFIG_HOME/$(echo $file | cut -d/ -f2-)"
+    # Get the correct destination of the file based on XDG base dirs
+    local file="$1"
+    local localdir="$(echo $file | cut -d/ -f1-2)"
+    local everything_else="$(echo $file | cut -d/ -f3-)"
+    # Check if path is config
+    if [ "$(echo $file | cut -d/ -f1)" = ".config" ]; then
+        printf "$XDG_CONFIG_HOME/$(echo $file | cut -d/ -f2-)"
 
-	# Local directory
-	elif [ "$localdir" = ".local/bin" ]; then
-		printf "$XDG_BIN_HOME/$everything_else"
-	
-	# There are no files in either of the following right now, but putting it here just in case as .local was specified
-	elif [ "$localdir" = ".local/share" ]; then
-		printf "$XDG_DATA_HOME/$everything_else"
-	elif [ "$localdir" = ".local/state" ]; then
-		printf "$XDG_STATE_HOME/$everything_else"
-	fi
+    # Local directory
+    elif [ "$localdir" = ".local/bin" ]; then
+        printf "$XDG_BIN_HOME/$everything_else"
+    
+    # There are no files in either of the following right now, but putting it here just in case as .local was specified
+    elif [ "$localdir" = ".local/share" ]; then
+        printf "$XDG_DATA_HOME/$everything_else"
+    elif [ "$localdir" = ".local/state" ]; then
+        printf "$XDG_STATE_HOME/$everything_else"
+    # For custom file mappings - added support for special file locations
+    elif [[ "$file" == "arch-packages/illogical-impulse-zsh/.zshrc" ]]; then
+        printf "$HOME/.zshrc"
+    elif [[ "$file" == "arch-packages/illogical-impulse-zsh/.zprofile" ]]; then
+        printf "$HOME/.zprofile"
+    elif [[ "$file" == "Extras/swaylock/config" ]]; then
+        printf "$XDG_CONFIG_HOME/swaylock/config"
+    fi
 }
 
 # Greetings!
@@ -135,6 +177,9 @@ while IFS= read -r -d '' file; do
         modified_files+=("$file")
     fi
 done < <(find "${folders[@]}" -type f -print0)
+
+# Also check custom files for modifications (like .zshrc)
+check_custom_files_for_modifications
 
 echo
 
