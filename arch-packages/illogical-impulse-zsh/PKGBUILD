@@ -1,0 +1,14 @@
+pkgname=illogical-impulse-zsh
+pkgver=1.0
+pkgrel=1
+pkgdesc='Illogical Impulse Z shell configuration'
+arch=(any)
+license=(None)
+depends=(
+  zsh
+  zoxide
+  fzf
+  fd
+  curl
+)
+install=./setup.sh
