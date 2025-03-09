@@ -1,72 +1,65 @@
 #!/bin/bash
+# This script maps custom files to destinations, backs up existing files, and copies the custom files
 
-# Script to copy custom files with direct paths using a mapping system
-base="$(pwd)"
-echo "Current directory: $base"
+set -euo pipefail
+cd "$(dirname "$0")"
+export base="$(pwd)"
 
-# Define colors for output
+# Define colors
 GREEN="\033[0;32m"
 RED="\033[0;31m"
 BLUE="\033[0;34m"
 CYAN="\033[0;36m"
 YELLOW="\033[1;33m"
+MAGENTA="\033[0;35m"
 RESET="\033[0m"
 
-# Define the mapping of source files to destination paths
-# Format: source path relative to repo root -> destination absolute path
-declare -A FILE_MAPPINGS=(
-    ["arch-packages/illogical-impulse-zsh/.zshrc"]="$HOME/.zshrc"
-    ["arch-packages/illogical-impulse-zsh/.zprofile"]="$HOME/.zprofile"
-    ["Extras/swaylock/config"]="$XDG_CONFIG_HOME/swaylock/config"
-    # Add more mappings here as needed
-    # ["path/to/source"]="path/to/destination"
-)
+# Define custom files to destinations map
+declare -A custom_files_map
+custom_files_map["arch-packages/illogical-impulse-zsh/.zshrc"]="$HOME/.zshrc"
 
-# Function to copy a single file
-copy_file() {
-    local src="$1"
-    local dest="$2"
-    local src_path="$base/$src"
+# Greetings!
+cat << 'EOF'
+###################################################################################################
+|                                                                                                 |
+|  Custom Files Mapper                                                                            |
+|                                                                                                 |
+|  This script will map custom files to their destinations, backing up existing files with .bak   |
+|  extension and then copying the custom files to their destinations.                             |
+|                                                                                                 |
+###################################################################################################
+EOF
+
+read -rp "Do you want to continue? [Y/n] " REPLY
+echo
+if [[ $REPLY =~ ^[Nn]$ ]]; then
+    echo -e "${RED}Exiting.${RESET}"
+    exit 0
+fi
+
+# Process custom files map - backup existing files and copy custom files
+echo -e "${CYAN}_____________________________________________________${RESET}"
+echo -e "${MAGENTA}Processing custom files map:${RESET}"
+for src in "${!custom_files_map[@]}"; do
+    dest="${custom_files_map[$src]}"
+    echo -e "${BLUE}Mapping $src -> $dest${RESET}"
     
-    echo -e "${BLUE}Copying $src to $dest...${RESET}"
-    echo "Source: $src_path"
-    echo "Destination: $dest"
-    
-    if [ -f "$src_path" ]; then
-        # Create backup if the destination file exists
-        if [ -f "$dest" ]; then
-            cp -f "$dest" "$dest.backup"
-            echo -e "${YELLOW}Created backup at $dest.backup${RESET}"
-        fi
-        
-        # Create destination directory if it doesn't exist
-        mkdir -p "$(dirname "$dest")"
-        
-        # Copy the file
-        cp -fv "$src_path" "$dest"
-        if [ $? -eq 0 ]; then
-            echo -e "${GREEN}Successfully copied file${RESET}"
-        else
-            echo -e "${RED}Failed to copy file${RESET}"
-        fi
-    else
-        echo -e "${RED}Source file not found: $src_path${RESET}"
-        # List directory contents for debugging
-        echo "Contents of directory:"
-        ls -la "$(dirname "$src_path")"
+    # Check if source file exists
+    if [[ ! -f "$base/$src" ]]; then
+        echo -e "${RED}Source file $base/$src does not exist. Skipping...${RESET}"
+        continue
     fi
     
-    echo -e "${CYAN}--------------------------------------------------${RESET}"
-}
-
-# Main process - loop through all mappings and copy files
-echo -e "${CYAN}====================================================${RESET}"
-echo -e "${CYAN}Starting custom file copy process${RESET}"
-echo -e "${CYAN}====================================================${RESET}"
-
-for src in "${!FILE_MAPPINGS[@]}"; do
-    dest="${FILE_MAPPINGS[$src]}"
-    copy_file "$src" "$dest"
+    # Backup existing file if it exists
+    if [[ -f "$dest" ]]; then
+        echo -e "${YELLOW}Backing up existing $dest to ${dest}.bak${RESET}"
+        cp -f "$dest" "${dest}.bak"
+    fi
+    
+    # Copy the custom file
+    echo -e "${GREEN}Copying $src to $dest${RESET}"
+    mkdir -p "$(dirname "$dest")"
+    cp -f "$base/$src" "$dest"
 done
 
-echo -e "${GREEN}Finished copying all custom files.${RESET}"
+echo -e "${GREEN}Done. Custom files have been copied to their destinations.${RESET}"

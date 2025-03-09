@@ -18,8 +18,12 @@ MAGENTA="\033[0;35m"
 RESET="\033[0m"
 
 # Define paths to update
-folders=(".config" ".local/bin" ".local/share" ".local/state")
+folders=(".config" ".local/bin")
 excludes=(".config/hypr/custom" ".config/ags/user_options.js" ".config/hypr/hyprland.conf")
+
+# Define custom files to destinations map
+declare -A custom_files_map
+custom_files_map["arch-packages/illogical-impulse-zsh/.zshrc"]="$HOME/.zshrc"
 
 get_checksum() {
     # Get the checksum of a specific file
@@ -306,8 +310,24 @@ for folder in "${folders[@]}"; do
     done
 done
 
-echo -e "${BLUE}Replacing .zshrc ...${RESET}"
-./fprce-copy-zshrc.sh
+# Process custom files map - backup existing files and copy custom files
+echo -e "${CYAN}_____________________________________________________${RESET}"
+echo -e "${MAGENTA}Processing custom files map:${RESET}"
+for src in "${!custom_files_map[@]}"; do
+    dest="${custom_files_map[$src]}"
+    echo -e "${BLUE}Mapping $src -> $dest${RESET}"
+    
+    # Backup existing file if it exists
+    if [[ -f "$dest" ]]; then
+        echo -e "${YELLOW}Backing up existing $dest to ${dest}.bak${RESET}"
+        cp -f "$dest" "${dest}.bak"
+    fi
+    
+    # Copy the custom file
+    echo -e "${GREEN}Copying $src to $dest${RESET}"
+    mkdir -p "$(dirname "$dest")"
+    cp -f "$base/$src" "$dest"
+done
 
 echo -e "${GREEN}Done. You may exit now.${RESET}"
 
