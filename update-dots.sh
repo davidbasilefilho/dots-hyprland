@@ -27,6 +27,19 @@ declare -A custom_file_map
 custom_file_map["arch-packages/illogical-impulse-zsh/.zshrc"]="$HOME/.zshrc"
 # Additional mappings can be added here
 
+# Debug information
+echo -e "${CYAN}Base directory: $base${RESET}"
+echo -e "${CYAN}Custom mappings defined:${RESET}"
+for src in "${!custom_file_map[@]}"; do
+    dest="${custom_file_map[$src]}"
+    echo -e "${YELLOW}  $src -> $dest${RESET}"
+    if [[ -f "$base/$src" ]]; then
+        echo -e "${GREEN}    Source file exists${RESET}"
+    else
+        echo -e "${RED}    Source file not found${RESET}"
+    fi
+done
+
 get_checksum() {
     # Get the checksum of a specific file
     local file="$1"
@@ -204,6 +217,7 @@ if ! git pull; then
     mkdir -p ./cache
     temp_folder=$(mktemp -d -p ./cache)
     git clone --branch "$current_branch" https://github.com/end-4/dots-hyprland/ --depth=1 "$temp_folder"
+    
     # Replace the existing dotfiles with the new ones
     for folder in "${folders[@]}"; do
         find "$temp_folder/$folder" -print0 | while IFS= read -r -d '' file; do
@@ -257,6 +271,7 @@ if ! git pull; then
     rm -rf "$temp_folder"
     
     # Process custom file mappings from temp folder
+    echo -e "${CYAN}_____________________________________________________${RESET}"
     echo -e "${MAGENTA}Processing custom file mappings from temp folder:${RESET}"
     for src in "${!custom_file_map[@]}"; do
         dest="${custom_file_map[$src]}"
@@ -324,7 +339,7 @@ for folder in "${folders[@]}"; do
     done
 done
 
-# Process custom file mappings
+# Process custom file mappings - Make sure this is outside any conditional block
 echo -e "${CYAN}_____________________________________________________${RESET}"
 echo -e "${MAGENTA}Processing custom file mappings:${RESET}"
 for src in "${!custom_file_map[@]}"; do
@@ -334,7 +349,12 @@ for src in "${!custom_file_map[@]}"; do
         mkdir -p "$(dirname "$dest")"
         cp -f "$base/$src" "$dest"
     else
-        echo -e "${YELLOW}Warning: Source file \"$src\" not found.${RESET}"
+        echo -e "${RED}Warning: Source file \"$src\" not found at path: $base/$src${RESET}"
+        # Try to find the file in the repo
+        echo -e "${YELLOW}Looking for $src in the repository...${RESET}"
+        find "$base" -name "$(basename "$src")" -type f 2>/dev/null | while read -r found; do
+            echo -e "${GREEN}Found similar file: $found${RESET}"
+        done
     fi
 done
 
