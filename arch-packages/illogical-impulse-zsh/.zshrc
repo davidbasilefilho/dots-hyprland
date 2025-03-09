@@ -129,3 +129,5 @@ alias dots='cd ~/.cache/dots-hyprland'
 
 # Custom paths
 export PATH=$HOME/.local/bin:$PATH
+
+echo "testing update script..."
