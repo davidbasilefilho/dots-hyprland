@@ -16,7 +16,7 @@ RESET="\033[0m"
 
 # Define custom files to destinations map
 declare -A custom_files_map
-custom_files_map["arch-packages/illogical-impulse-zsh/.zshrc"]="$HOME/.zshrc"
+custom_files_map[".zshrc"]="$HOME/.zshrc"
 
 # Greetings!
 cat << 'EOF'

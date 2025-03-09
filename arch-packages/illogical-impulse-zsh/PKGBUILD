@@ -13,4 +13,3 @@ depends=(
   mise
   starship
 )
-install=./setup.sh
