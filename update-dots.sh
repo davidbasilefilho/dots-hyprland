@@ -21,83 +21,35 @@ RESET="\033[0m"
 folders=(".config" ".local/bin" ".local/share" ".local/state")
 excludes=(".config/hypr/custom" ".config/ags/user_options.js" ".config/hypr/hyprland.conf")
 
-# Function to process custom file mappings by calling the external script
-process_custom_mappings() {
+# Function to directly copy important files regardless of modification status
+copy_important_files() {
     echo -e "${CYAN}_____________________________________________________${RESET}"
-    echo -e "${MAGENTA}Processing custom file mappings...${RESET}"
+    echo -e "${MAGENTA}Directly copying important files...${RESET}"
     
-    if [[ -f "$base/copy-custom-files.sh" ]]; then
-        chmod +x "$base/copy-custom-files.sh"
-        "$base/copy-custom-files.sh"
-        if [[ $? -eq 0 ]]; then
-            echo -e "${GREEN}Custom file mappings processed successfully.${RESET}"
-        else
-            echo -e "${RED}Error occurred while processing custom file mappings.${RESET}"
-        fi
+    # FORCE COPY .zshrc - no questions asked
+    local ZSHRC_SRC="$base/arch-packages/illogical-impulse-zsh/.zshrc"
+    local ZSHRC_DEST="$HOME/.zshrc"
+    
+    echo -e "${BLUE}Force copying .zshrc to $ZSHRC_DEST...${RESET}"
+    rm -f "$ZSHRC_DEST"  # Remove old file first
+    cp -f "$ZSHRC_SRC" "$ZSHRC_DEST"
+    if [ $? -eq 0 ]; then
+        echo -e "${GREEN}Successfully force-copied .zshrc${RESET}"
     else
-        echo -e "${RED}Warning: Custom file mapping script not found at $base/copy-custom-files.sh${RESET}"
-        
-        # Fallback - copy important custom files directly if the script is missing
-        echo -e "${YELLOW}Falling back to direct file copying for critical custom files${RESET}"
-        
-        # .zshrc
-        if [[ -f "$base/arch-packages/illogical-impulse-zsh/.zshrc" ]]; then
-            echo -e "${BLUE}Copying .zshrc to $HOME/.zshrc...${RESET}"
-            if [[ -f "$HOME/.zshrc" ]]; then
-                cp -f "$HOME/.zshrc" "$HOME/.zshrc.backup"
-                echo -e "${YELLOW}Created backup at $HOME/.zshrc.backup${RESET}"
-            fi
-            cp -fv "$base/arch-packages/illogical-impulse-zsh/.zshrc" "$HOME/.zshrc"
-        fi
-        
-        # .zprofile
-        if [[ -f "$base/arch-packages/illogical-impulse-zsh/.zprofile" ]]; then
-            echo -e "${BLUE}Copying .zprofile to $HOME/.zprofile...${RESET}"
-            if [[ -f "$HOME/.zprofile" ]]; then
-                cp -f "$HOME/.zprofile" "$HOME/.zprofile.backup"
-                echo -e "${YELLOW}Created backup at $HOME/.zprofile.backup${RESET}"
-            fi
-            cp -fv "$base/arch-packages/illogical-impulse-zsh/.zprofile" "$HOME/.zprofile"
-        fi
-        
-        # Swaylock config
-        if [[ -f "$base/Extras/swaylock/config" ]]; then
-            echo -e "${BLUE}Copying swaylock config to $XDG_CONFIG_HOME/swaylock/config...${RESET}"
-            mkdir -p "$XDG_CONFIG_HOME/swaylock"
-            if [[ -f "$XDG_CONFIG_HOME/swaylock/config" ]]; then
-                cp -f "$XDG_CONFIG_HOME/swaylock/config" "$XDG_CONFIG_HOME/swaylock/config.backup"
-                echo -e "${YELLOW}Created backup at $XDG_CONFIG_HOME/swaylock/config.backup${RESET}"
-            fi
-            cp -fv "$base/Extras/swaylock/config" "$XDG_CONFIG_HOME/swaylock/config"
-        fi
+        echo -e "${RED}Failed to copy .zshrc${RESET}"
     fi
-}
-
-# Function to check custom files for modifications
-check_custom_files_for_modifications() {
-    echo -e "${CYAN}_____________________________________________________${RESET}"
-    echo -e "${MAGENTA}Checking custom files for modifications...${RESET}"
     
-    # Define custom mappings directly in the update script to ensure they're always available
-    declare -A custom_mappings=(
-        ["arch-packages/illogical-impulse-zsh/.zshrc"]="$HOME/.zshrc"
-        ["arch-packages/illogical-impulse-zsh/.zprofile"]="$HOME/.zprofile"
-        ["Extras/swaylock/config"]="$XDG_CONFIG_HOME/swaylock/config"
-    )
+    # Also handle other important files
+    if [[ -f "$base/arch-packages/illogical-impulse-zsh/.zprofile" ]]; then
+        echo -e "${BLUE}Copying .zprofile to $HOME/.zprofile...${RESET}"
+        cp -f "$base/arch-packages/illogical-impulse-zsh/.zprofile" "$HOME/.zprofile"
+    fi
     
-    # Check each custom file for modifications
-    for src in "${!custom_mappings[@]}"; do
-        dest="${custom_mappings[$src]}"
-        if [[ -f "$base/$src" && -f "$dest" ]]; then
-            base_checksum=$(get_checksum "$base/$src")
-            dest_checksum=$(get_checksum "$dest")
-            
-            if [[ $base_checksum != $dest_checksum ]]; then
-                modified_files+=("$src")
-                echo -e "${YELLOW}Custom file modified: $src -> $dest${RESET}"
-            fi
-        fi
-    done
+    if [[ -f "$base/Extras/swaylock/config" ]]; then
+        echo -e "${BLUE}Copying swaylock config...${RESET}"
+        mkdir -p "$XDG_CONFIG_HOME/swaylock"
+        cp -f "$base/Extras/swaylock/config" "$XDG_CONFIG_HOME/swaylock/config"
+    fi
 }
 
 get_checksum() {
@@ -135,13 +87,6 @@ get_destination() {
         printf "$XDG_DATA_HOME/$everything_else"
     elif [ "$localdir" = ".local/state" ]; then
         printf "$XDG_STATE_HOME/$everything_else"
-    # For custom file mappings - added support for special file locations
-    elif [[ "$file" == "arch-packages/illogical-impulse-zsh/.zshrc" ]]; then
-        printf "$HOME/.zshrc"
-    elif [[ "$file" == "arch-packages/illogical-impulse-zsh/.zprofile" ]]; then
-        printf "$HOME/.zprofile"
-    elif [[ "$file" == "Extras/swaylock/config" ]]; then
-        printf "$XDG_CONFIG_HOME/swaylock/config"
     fi
 }
 
@@ -203,9 +148,6 @@ while IFS= read -r -d '' file; do
         modified_files+=("$file")
     fi
 done < <(find "${folders[@]}" -type f -print0)
-
-# Also check custom files for modifications (like .zshrc)
-check_custom_files_for_modifications
 
 echo
 
@@ -331,7 +273,7 @@ if ! git pull; then
     # Remove files
     for file in "${files_to_remove[@]}"; do
         echo -e "${YELLOW}Removing $file ...${RESET}"
-	homefile="$(get_destination $file)"
+        homefile="$(get_destination $file)"
         if [[ -f "$homefile" ]]; then
             rm -rf "$homefile"
         fi
@@ -340,8 +282,8 @@ if ! git pull; then
     echo -e "${GREEN}New dotfiles have been copied. Cleaning up temporary folder...${RESET}"
     rm -rf "$temp_folder"
     
-    # Process custom mappings even in the temp folder case
-    process_custom_mappings
+    # Always copy important files like .zshrc even when using temp folder
+    copy_important_files
     
     echo -e "${GREEN}Done. You may exit now.${RESET}"
     exit 0
@@ -398,8 +340,8 @@ for folder in "${folders[@]}"; do
     done
 done
 
-# Process custom file mappings at the end of the update
-process_custom_mappings
+# Always copy important files like .zshrc, regardless of their modification status
+copy_important_files
 
 echo -e "${GREEN}Done. You may exit now.${RESET}"
 
