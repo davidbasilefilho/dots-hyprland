@@ -124,4 +124,4 @@ fi
 
 alias ls="eza -lah --git --icons auto"
 
-echo "testing update script..."
+echo "testing update script 2..."
