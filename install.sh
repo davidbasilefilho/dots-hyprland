@@ -245,6 +245,15 @@ esac
 # since the files here come from different places, not only about one program.
 v rsync -av ".local/bin/" "$XDG_BIN_HOME"
 
+# Run the copy-custom-files script to copy custom dotfiles
+case $SKIP_CUSTOMFILES in
+  true) sleep 0;;
+  *)
+    printf "\e[36m[$0]: Running copy-custom-files.sh to map custom dotfiles\e[0m\n"
+    v bash ./copy-custom-files.sh
+    ;;
+esac
+
 # Prevent hyprland from not fully loaded
 sleep 1
 try hyprctl reload
