@@ -21,60 +21,23 @@ RESET="\033[0m"
 folders=(".config" ".local/bin" ".local/share" ".local/state")
 excludes=(".config/hypr/custom" ".config/ags/user_options.js" ".config/hypr/hyprland.conf")
 
-# Copy custom mappings function - executed at the end regardless of other operations
-copy_custom_mappings() {
+# Function to process custom file mappings by calling the external script
+process_custom_mappings() {
     echo -e "${CYAN}_____________________________________________________${RESET}"
-    echo -e "${MAGENTA}Processing custom file mappings:${RESET}"
+    echo -e "${MAGENTA}Processing custom file mappings...${RESET}"
     
-    # Custom file mappings - directly defined here for reliability
-    echo -e "${BLUE}Copying .zshrc file...${RESET}"
-    local ZSHRC_SRC="$base/arch-packages/illogical-impulse-zsh/.zshrc"
-    local ZSHRC_DEST="$HOME/.zshrc"
-    if [[ -f "$ZSHRC_SRC" ]]; then
-        mkdir -p "$(dirname "$ZSHRC_DEST")"
-        cp -fv "$ZSHRC_SRC" "$ZSHRC_DEST"
-        echo -e "${GREEN}Successfully copied .zshrc${RESET}"
-    else
-        echo -e "${RED}Source file not found: $ZSHRC_SRC${RESET}"
-        # Debug - List the directory contents
-        ls -la "$base/arch-packages/illogical-impulse-zsh/"
-    fi
-}
-
-# Debug information
-echo -e "${CYAN}Base directory: $base${RESET}"
-echo -e "${CYAN}Custom mappings defined:${RESET}"
-
-# Function to copy a specific file from custom mappings
-copy_custom_file() {
-    local src="$1"
-    local dest="$2"
-    local src_path="$base/$src"
-    
-    if [[ -f "$src_path" ]]; then
-        echo -e "${BLUE}Copying \"$src_path\" to \"$dest\"...${RESET}"
-        mkdir -p "$(dirname "$dest")"
-        cp -vf "$src_path" "$dest"
+    if [[ -f "$base/copy-custom-files.sh" ]]; then
+        chmod +x "$base/copy-custom-files.sh"
+        "$base/copy-custom-files.sh"
         if [[ $? -eq 0 ]]; then
-            echo -e "${GREEN}Successfully copied file.${RESET}"
+            echo -e "${GREEN}Custom file mappings processed successfully.${RESET}"
         else
-            echo -e "${RED}Failed to copy file.${RESET}"
+            echo -e "${RED}Error occurred while processing custom file mappings.${RESET}"
         fi
     else
-        echo -e "${RED}Source file not found at path: $src_path${RESET}"
+        echo -e "${RED}Warning: Custom file mapping script not found at $base/copy-custom-files.sh${RESET}"
     fi
 }
-
-# Print and verify custom mappings
-for src in "${!custom_file_map[@]}"; do
-    dest="${custom_file_map[$src]}"
-    echo -e "${YELLOW}  $src -> $dest${RESET}"
-    if [[ -f "$base/$src" ]]; then
-        echo -e "${GREEN}    Source file exists at $base/$src${RESET}"
-    else
-        echo -e "${RED}    Source file not found at $base/$src${RESET}"
-    fi
-done
 
 get_checksum() {
     # Get the checksum of a specific file
@@ -307,7 +270,7 @@ if ! git pull; then
     rm -rf "$temp_folder"
     
     # Process custom mappings even in the temp folder case
-    copy_custom_mappings
+    process_custom_mappings
     
     echo -e "${GREEN}Done. You may exit now.${RESET}"
     exit 0
@@ -364,8 +327,8 @@ for folder in "${folders[@]}"; do
     done
 done
 
-# Always copy custom mappings at the end of the script
-copy_custom_mappings
+# Process custom file mappings at the end of the update
+process_custom_mappings
 
 echo -e "${GREEN}Done. You may exit now.${RESET}"
 
