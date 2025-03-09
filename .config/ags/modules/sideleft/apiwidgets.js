@@ -36,22 +36,22 @@ const APILIST = {
         tabIcon: chatGPTTabIcon,
         placeholderText: getString('Message the model...'),
     },
-    'waifu': {
-        name: 'Waifus',
-        sendCommand: waifuSendMessage,
-        contentWidget: waifuView,
-        commandBar: waifuCommands,
-        tabIcon: waifuTabIcon,
-        placeholderText: getString('Enter tags'),
-    },
-    'booru': {
-        name: 'Booru',
-        sendCommand: booruSendMessage,
-        contentWidget: booruView,
-        commandBar: booruCommands,
-        tabIcon: booruTabIcon,
-        placeholderText: getString('Enter tags and/or page number'),
-    },
+    // 'waifu': {
+    //     name: 'Waifus',
+    //     sendCommand: waifuSendMessage,
+    //     contentWidget: waifuView,
+    //     commandBar: waifuCommands,
+    //     tabIcon: waifuTabIcon,
+    //     placeholderText: getString('Enter tags'),
+    // },
+    // 'booru': {
+    //     name: 'Booru',
+    //     sendCommand: booruSendMessage,
+    //     contentWidget: booruView,
+    //     commandBar: booruCommands,
+    //     tabIcon: booruTabIcon,
+    //     placeholderText: getString('Enter tags and/or page number'),
+    // },
 }
 const APIS = userOptions.sidebar.pages.apis.order.map((apiName) => APILIST[apiName]);
 let currentApiId = 0;
