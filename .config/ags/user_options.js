@@ -6,7 +6,8 @@
 const userConfigOptions = {
     ai: {
         defaultTemperature: 0,
-    }
+    },
+    
 }
 
 export default userConfigOptions;
