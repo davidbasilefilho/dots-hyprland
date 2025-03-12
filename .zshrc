@@ -129,4 +129,4 @@ alias dots='cd ~/.cache/dots-hyprland'
 
 # Custom paths
 export PATH=$HOME/.local/bin:$PATH
-export GOOGLE_API_KEY="$(cat google_api_key.txt)"
+export GOOGLE_API_KEY="$(cat $HOME/google_api_key.txt)"
