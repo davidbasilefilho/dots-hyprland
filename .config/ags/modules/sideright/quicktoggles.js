@@ -232,7 +232,7 @@ export const ModuleGameMode = async (props = {}) => {
 
 export const ModuleIdleInhibitor = (props = {}) => Widget.Button({ // TODO: Make this work
     attribute: {
-        enabled: false,
+        enabled: true,
     },
     className: 'txt-small sidebar-iconbutton',
     tooltipText: getString('Keep system awake'),
