@@ -12,4 +12,7 @@ depends=(
   curl
   mise
   starship
+  wl-clipboard
+  neovim
+  obsidian
 )
