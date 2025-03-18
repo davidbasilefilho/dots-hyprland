@@ -114,6 +114,10 @@ for i in "${metapkgs[@]}"; do
 	v install-local-pkgbuild "$i" "$metainstallflags"
 done
 
+sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting
+git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
+
 # These python packages are installed using uv, not pacman.
 showfun install-python-packages
 v install-python-packages

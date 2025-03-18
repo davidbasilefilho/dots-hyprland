@@ -121,10 +121,9 @@ fi
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 
-alias ls='ls --color=auto'
-alias ll='ls -la'
-alias grep='grep --color=auto'
-alias vim='nvim'
+alias ls='eza -lah --color=auto'
+alias grep='rg'
+alias nv='nvim'
 alias dots='cd ~/.cache/dots-hyprland'
 
 # Custom paths
