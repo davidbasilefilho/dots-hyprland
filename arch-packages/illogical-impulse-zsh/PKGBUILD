@@ -15,4 +15,7 @@ depends=(
   wl-clipboard
   neovim
   obsidian
+  otf-geist-mono-nerd
+  ttf-zed-mono-nerd
+  ttf-jetbrains-mono-nerd
 )
