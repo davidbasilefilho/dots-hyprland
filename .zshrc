@@ -125,7 +125,7 @@ alias ls='eza -lah --color=auto'
 alias grep='rg'
 alias nv='nvim'
 alias dots='cd ~/.cache/dots-hyprland'
-alias cmatrix="unimatrix"
+alias cmatrix="unimatrix -l AaS"
 
 # Custom paths
 export PATH=$HOME/.local/bin:$PATH
