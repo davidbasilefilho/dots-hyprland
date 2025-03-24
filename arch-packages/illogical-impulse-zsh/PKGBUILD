@@ -15,6 +15,8 @@ depends=(
   wl-clipboard
   neovim
   obsidian
+  unimatrix
+  pfetch-rs-bin
   otf-geist-mono-nerd
   ttf-zed-mono-nerd
   ttf-jetbrains-mono-nerd
