@@ -232,9 +232,9 @@ export const ModuleGameMode = async (props = {}) => {
     };
 }
 
-export const ModuleIdleInhibitor = (props = {}) => Widget.Button({ // TODO: Make this work
+export const ModuleIdleInhibitor = (props = {}) => Widget.Button({
     attribute: {
-        enabled: false,
+        enabled: true,
     },
     className: 'txt-small sidebar-iconbutton',
     tooltipText: getString('Keep system awake'),
@@ -247,8 +247,10 @@ export const ModuleIdleInhibitor = (props = {}) => Widget.Button({ // TODO: Make
     child: MaterialIcon('coffee', 'norm'),
     setup: (self) => {
         setupCursorHover(self);
-        self.attribute.enabled = !!exec('pidof wayland-idle-inhibitor.py');
-        self.toggleClassName('sidebar-button-active', self.attribute.enabled);
+        // Start enabled and launch the script
+        self.attribute.enabled = true;
+        self.toggleClassName('sidebar-button-active', true);
+        Utils.execAsync(['bash', '-c', `pidof wayland-idle-inhibitor.py || ${App.configDir}/scripts/wayland-idle-inhibitor.py`]).catch(print);
     },
     ...props,
 });

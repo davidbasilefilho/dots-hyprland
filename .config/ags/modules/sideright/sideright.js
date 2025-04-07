@@ -32,7 +32,7 @@ const QUICK_TOGGLES = {
     'bluetooth': ToggleIconBluetooth(),
     'rawinput': await ModuleRawInput(),
     'touchpad': await HyprToggleIcon('touchpad_mouse', 'No touchpad while typing', 'input:touchpad:disable_while_typing', {}),
-    'nightlight': await ModuleNightLight(),
+    // 'nightlight': await ModuleNightLight(),
     'invertcolors': await ModuleInvertColors(),
     'gamemode': await ModuleGameMode(),
     'idleinhibitor': ModuleIdleInhibitor(),
