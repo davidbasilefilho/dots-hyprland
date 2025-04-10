@@ -1,87 +1,88 @@
 * {
-    selection {
-        background-color: $secondary;
-        color: $onSecondary;
-    }
+  selection {
+    background-color: $secondary;
+    color: $onSecondary;
+  }
 
-    caret-color: $onLayer2;
+  caret-color: $onLayer2;
 }
 
 @keyframes appear {
-    from {
-        opacity: 0;
-    }
+  from {
+    opacity: 0;
+    transform: translateY(0.15rem);
+  }
 
-    to {
-        opacity: 1;
-    }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 menu {
-    @include small-rounding;
-    border: 1px solid mix($surfaceContainer, $onBackground, 80%); // I hate this
-    padding: 0.681rem;
-    background: opacify($surfaceContainer, 1);
-    color: $onSurface;
-    -gtk-outline-radius: 1.159rem;
+  @include small-rounding;
+  border: 1px solid mix($surfaceContainer, $onBackground, 85%);
+  padding: 0.7rem;
+  background: opacify($surfaceContainer, 1);
+  color: $onSurface;
+  -gtk-outline-radius: $rounding_medium;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 
-    animation-name: appear;
-    animation-duration: 40ms;
-    animation-timing-function: ease-out;
-    animation-iteration-count: 1;
+  animation-name: appear;
+  animation-duration: 140ms;
+  animation-timing-function: cubic-bezier(0.05, 0.7, 0.1, 1);
+  animation-iteration-count: 1;
 }
 
-menubar>menuitem {
-    border-radius: 0.545rem;
-    -gtk-outline-radius: 0.545rem;
-    min-width: 13.636rem;
-    min-height: 2.727rem;
+menubar > menuitem {
+  border-radius: $rounding_verysmall;
+  -gtk-outline-radius: $rounding_verysmall;
+  min-width: 13.6rem;
+  min-height: 2.8rem;
 }
 
-menu>menuitem {
-    padding: 0.4em 1.5rem;
-    background: transparent;
-    transition: 0.2s ease background-color;
-    border-radius: 0.545rem;
-    -gtk-outline-radius: 0.545rem;
+menu > menuitem {
+  padding: 0.5em 1.5rem;
+  background: transparent;
+  transition: 0.15s ease background-color;
+  border-radius: $rounding_verysmall;
+  -gtk-outline-radius: $rounding_verysmall;
 }
 
-menu>menuitem:hover,
-menu>menuitem:focus {
-    background-color: $layer2Hover;
+menu > menuitem:hover,
+menu > menuitem:focus {
+  background-color: $layer2Hover;
 }
 
-menu>menuitem:active {
-    background-color: $layer2Active;
+menu > menuitem:active {
+  background-color: $layer2Active;
 }
 
 radio {
-    @include full-rounding;
-    margin: 0.273rem;
-    min-width: 15px;
-    min-height: 15px;
-    border: 0.068rem solid $outline;
+  @include full-rounding;
+  margin: 0.28rem;
+  min-width: 16px;
+  min-height: 16px;
+  border: 0.07rem solid $outline;
 }
 
-// radio:first-child {
-//     background-color: red;
-// }
-
 radio:checked {
-    min-width: 8px;
-    min-height: 8px;
-    background-color: $onPrimary;
-    border: 0.477rem solid $primary;
+  min-width: 8px;
+  min-height: 8px;
+  background-color: $onPrimary;
+  border: 0.48rem solid $primary;
 }
 
 tooltip {
-    animation-name: appear;
-    animation-duration: 100ms;
-    animation-timing-function: ease-out;
-    animation-iteration-count: 1;
-    @include normal-rounding;
-    background-color: opacify($color: $inverseSurface, $amount: 1);
-    color: $inverseOnSurface;
+  animation-name: appear;
+  animation-duration: 120ms;
+  animation-timing-function: cubic-bezier(0.05, 0.7, 0.1, 1);
+  animation-iteration-count: 1;
+  @include normal-rounding;
+  background-color: opacify($color: $inverseSurface, $amount: 1);
+  color: $inverseOnSurface;
+  padding: 0.5rem 0.7rem;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.14);
 }
 
 /////////////////////////////////////////
@@ -95,286 +96,305 @@ tooltip {
 //     ╰── button.image-button.emoji-section
 
 popover {
-    @include elevation-border-softer;
-    padding: 0.681rem;
-    background: $surfaceContainerHigh;
-    color: $onSurface;
-    border-radius: 1.159rem;
-    -gtk-outline-radius: 1.159rem;
+  @include elevation-border-softer;
+  padding: 0.75rem;
+  background: $surfaceContainerHigh;
+  color: $onSurface;
+  border-radius: $rounding_medium;
+  -gtk-outline-radius: $rounding_medium;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.12);
 
-    animation-name: appear;
-    animation-duration: 40ms;
-    animation-timing-function: ease-out;
-    animation-iteration-count: 1;
+  animation-name: appear;
+  animation-duration: 150ms;
+  animation-timing-function: cubic-bezier(0.05, 0.7, 0.1, 1);
+  animation-iteration-count: 1;
 }
-
 
 /////////////////////////////////////////
 
 .configtoggle-box {
-    padding: 0.205rem 0.341rem;
+  padding: 0.22rem 0.35rem;
 }
 
 .configtoggle-reset {
-    @include small-rounding;
-    color: $onLayer2;
-    background-color: $layer2;
-    min-width: 2.045rem;
-    min-height: 2.045rem;
+  @include small-rounding;
+  color: $onLayer2;
+  background-color: $layer2;
+  min-width: 2.1rem;
+  min-height: 2.1rem;
+  transition: background-color 0.15s ease;
 }
 
 .configtoggle-reset:focus,
 .configtoggle-reset:hover {
-    background-color: $layer2Hover;
+  background-color: $layer2Hover;
 }
 
 .configtoggle-reset:active {
-    background-color: $layer2Active;
+  background-color: $layer2Active;
 }
 
-
+// Enhanced switch styling for better visual feedback
 .switch-bg {
-    @include element_decel;
-    @include full-rounding;
-    border: 0.136rem solid $onSurface;
-    min-width: 2.864rem;
-    min-height: 1.637rem;
+  @include element_decel;
+  @include full-rounding;
+  border: 0.14rem solid $onSurface;
+  min-width: 2.9rem;
+  min-height: 1.65rem;
 }
 
 .switch-bg-true {
-    background-color: $primary;
-    border: 0.136rem solid $primary;
+  background-color: $primary;
+  border: 0.14rem solid $primary;
 }
 
 .switch-fg {
-    @include full-rounding;
-    @include menu_decel;
-    background-color: $onSurface;
-    color: $layer1;
-    min-width: 0.819rem;
-    min-height: 0.819rem;
-    margin-left: 0.477rem;
+  @include full-rounding;
+  @include menu_decel;
+  background-color: $onSurface;
+  color: $layer1;
+  min-width: 0.82rem;
+  min-height: 0.82rem;
+  margin-left: 0.48rem;
 }
 
 .switch-fg-true {
-    background-color: $onPrimary;
-    color: $primary;
-    min-width: 1.431rem;
-    min-height: 1.431rem;
-    margin-left: 1.431rem;
+  background-color: $onPrimary;
+  color: $primary;
+  min-width: 1.45rem;
+  min-height: 1.45rem;
+  margin-left: 1.45rem;
 }
 
 .switch-fg-toggling-false {
-    @include menu_decel;
-    min-width: 1.636rem;
-    min-height: 0.819rem;
+  @include menu_decel;
+  min-width: 1.65rem;
+  min-height: 0.82rem;
 }
 
+// Modern segment styling
 .segment-container {
-    @include full-rounding;
-    border: 0.068rem solid $outline;
+  @include full-rounding;
+  border: 0.07rem solid $outline;
+  overflow: hidden;
 }
 
-.segment-container>*:first-child {
-    border-top-left-radius: 9999px;
-    border-bottom-left-radius: 9999px;
+.segment-container > *:first-child {
+  border-top-left-radius: 9999px;
+  border-bottom-left-radius: 9999px;
 }
 
-.segment-container>* {
-    border-right: 0.068rem solid $outline;
-    padding: 0.341rem 0.682rem;
+.segment-container > * {
+  border-right: 0.07rem solid $outline;
+  padding: 0.35rem 0.7rem;
 }
 
-.segment-container>*:last-child {
-    border-right: 0rem solid transparent;
-    border-top-right-radius: 9999px;
-    border-bottom-right-radius: 9999px;
+.segment-container > *:last-child {
+  border-right: 0;
+  border-top-right-radius: 9999px;
+  border-bottom-right-radius: 9999px;
 }
 
 .segment-btn {
-    color: $onSurface;
+  color: $onSurface;
+  transition: all 0.15s ease;
 }
 
 .segment-btn:focus,
 .segment-btn:hover {
-    background-color: $layer0Hover;
+  background-color: $layer0Hover;
 }
 
 .segment-btn-enabled {
-    background-color: $secondaryContainer;
-    color: $onSecondaryContainer;
+  background-color: $secondaryContainer;
+  color: $onSecondaryContainer;
 }
 
 .segment-btn-enabled:hover,
 .segment-btn-enabled:focus {
-    background-color: $secondaryContainer;
-    color: $onSecondaryContainer;
+  background-color: mix($secondaryContainer, $onSecondaryContainer, 92%);
+  color: $onSecondaryContainer;
 }
 
-.multipleselection-container {}
+// Multiple selection component with improved spacing
+.multipleselection-container {
+  gap: 0.35rem;
+}
 
 .multipleselection-btn {
-    @include small-rounding;
-    padding: 0rem 0.341rem;
-    border: 0.034rem solid $outline;
-    color: $onSurface;
+  @include small-rounding;
+  padding: 0.28rem 0.5rem;
+  border: 0.07rem solid $outline;
+  color: $onSurface;
+  transition: all 0.15s ease;
 }
 
 .multipleselection-btn:focus,
 .multipleselection-btn:hover {
-    background-color: $layer0Hover;
-    color: $onSurface;
+  background-color: $layer0Hover;
+  color: $onSurface;
 }
 
 .multipleselection-btn-enabled {
-    background-color: $secondaryContainer;
-    color: $onSecondaryContainer;
+  background-color: $secondaryContainer;
+  color: $onSecondaryContainer;
+  border-color: transparent;
 }
 
 .multipleselection-btn-enabled:hover,
 .multipleselection-btn-enabled:focus {
-    background-color: $secondaryContainer;
-    color: $onSecondaryContainer;
+  background-color: mix($secondaryContainer, $onSecondaryContainer, 92%);
+  color: $onSecondaryContainer;
 }
 
+// Gap utilities
 .gap-v-5 {
-    min-height: 0.341rem;
+  min-height: 0.35rem;
 }
 
 .gap-h-5 {
-    min-width: 0.341rem;
+  min-width: 0.35rem;
 }
 
 .gap-v-10 {
-    min-height: 0.682rem;
+  min-height: 0.7rem;
 }
 
 .gap-h-10 {
-    min-width: 0.682rem;
+  min-width: 0.7rem;
 }
 
 .gap-v-15 {
-    min-height: 1.023rem;
+  min-height: 1.05rem;
 }
 
 .gap-h-15 {
-    min-width: 1.023rem;
+  min-width: 1.05rem;
 }
 
+// Tab styles with cleaner transitions
 .tab-btn {
-    @include small-rounding;
-    @include element_decel;
-    min-height: 2.5rem;
-    color: $onLayer0;
+  @include small-rounding;
+  @include element_decel;
+  min-height: 2.6rem;
+  color: $onLayer0;
+  padding: 0 0.7rem;
 }
 
 .tab-btn:hover {
-    background-color: $layer0Hover;
+  background-color: $layer0Hover;
 }
 
 .tab-btn:focus {
-    background-color: $surfaceContainerLow;
+  background-color: $surfaceContainerLow;
 }
 
-.tab-btn-active>box>label {
-    color: $primary;
+.tab-btn-active > box > label {
+  color: $primary;
+  font-weight: 500;
 }
 
 .tab-indicator {
-    transition: 180ms ease-in-out; // Doesn't look that good, but it syncs with the GtkStack
-    min-height: 0.205rem;
-    padding: 0rem 1.023rem;
-    color: $primary;
+  transition: 180ms cubic-bezier(0.05, 0.7, 0.1, 1);
+  min-height: 0.21rem;
+  padding: 0 1rem;
+  background-color: $primary;
 }
 
 .tab-icon {
-    @include element_decel;
-    @include full-rounding;
-    min-width: 2.25rem;
-    min-height: 2.25rem;
-    font-size: 1.406rem;
-    color: $onSurface;
+  @include element_decel;
+  @include full-rounding;
+  min-width: 2.3rem;
+  min-height: 2.3rem;
+  font-size: 1.4rem;
+  color: $onSurface;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .tab-icon-active {
-    background-color: $secondaryContainer;
-    color: $onSecondaryContainer;
+  background-color: $secondaryContainer;
+  color: $onSecondaryContainer;
 }
 
 .tab-icon-expandable {
-    transition: 0ms;
-    @include full-rounding;
-    min-width: 2.25rem;
-    min-height: 2.25rem;
-    font-size: 1.406rem;
-    color: $onSurface;
-    padding: 0rem;
+  transition: all 250ms cubic-bezier(0.05, 0.7, 0.1, 1);
+  @include full-rounding;
+  min-width: 2.3rem;
+  min-height: 2.3rem;
+  font-size: 1.4rem;
+  color: $onSurface;
+  padding: 0;
 }
 
 .tab-icon-expandable-active {
-    background-color: $secondaryContainer;
-    color: $onSecondaryContainer;
-    padding: 0rem 0.545rem;
-    min-width: 9.545rem;
+  background-color: $secondaryContainer;
+  color: $onSecondaryContainer;
+  padding: 0 0.55rem;
+  min-width: 9.6rem;
 }
 
 widget {
-    @include small-rounding;
+  @include small-rounding;
 }
 
+// Modern spinbutton with improved interaction
 .spinbutton {
-    @include small-rounding;
+  @include small-rounding;
+  color: $onLayer2;
+  background-color: $layer2;
+  min-width: 2.1rem;
+  min-height: 2.1rem;
+  caret-color: $onLayer2;
+  overflow: hidden;
+
+  entry {
     color: $onLayer2;
-    background-color: $layer2;
-    min-width: 2.045rem;
-    min-height: 2.045rem;
-    caret-color: $onLayer2;
+    margin: 0.48rem 0.62rem;
+  }
 
-    entry {
-        color: $onLayer2;
-        margin: 0.477rem 0.614rem;
-    }
+  button {
+    @include unsharpen-rounding;
+    min-width: 2.1rem;
+    min-height: 2.1rem;
+    -gtk-outline-radius: $rounding_small;
+    transition: background-color 0.15s ease;
+  }
 
-    button {
-        @include unsharpen-rounding;
-        min-width: 2.045rem;
-        min-height: 2.045rem;
-        -gtk-outline-radius: $rounding_small;
-    }
+  button.up {
+    // Only apply rounding to (+) button
+    border-top-right-radius: $rounding_small;
+    border-bottom-right-radius: $rounding_small;
+  }
 
-    button.up {
-        // Only apply rounding to (+) button
-        border-top-right-radius: $rounding_small;
-        border-bottom-right-radius: $rounding_small;
-    }
+  button:hover {
+    background-color: $layer2Hover;
+  }
 
-    // button:focus, // Looks weird after clicking cuz it'll highlight both + and -
-    button:hover {
-        background-color: $layer2Hover;
-    }
-
-    button:active {
-        background-color: $layer2Active;
-    }
+  button:active {
+    background-color: $layer2Active;
+  }
 }
 
 .spinbutton-reset {
-    @include small-rounding;
-    color: $onLayer2;
-    background-color: $layer2;
-    min-width: 2.045rem;
-    min-height: 2.045rem;
+  @include small-rounding;
+  color: $onLayer2;
+  background-color: $layer2;
+  min-width: 2.1rem;
+  min-height: 2.1rem;
+  transition: background-color 0.15s ease;
 }
 
 .spinbutton-reset:focus,
 .spinbutton-reset:hover {
-    background-color: $layer2Hover;
+  background-color: $layer2Hover;
 }
 
 .spinbutton-reset:active {
-    background-color: $layer2Active;
+  background-color: $layer2Active;
 }
 
 textview {
-    caret-color: $onBackground;
+  caret-color: $onBackground;
 }

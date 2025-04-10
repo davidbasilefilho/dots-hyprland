@@ -1,139 +1,163 @@
 .overview-window {
-    margin-top: 2.727rem;
+  margin-top: 2.75rem;
 }
 
 .overview-search-box {
-    @include element_decel;
-    @include large-rounding;
-    @include elevation-border;
-    @include elevation2;
-    min-width: 13.636rem;
-    min-height: 3.409rem;
-    padding: 0rem 1.364rem;
-    padding-right: 2.864rem;
-    background-color: $background;
-    color: $onBackground;
+  @include element_decel;
+  @include large-rounding;
+  @include elevation-border;
+  min-width: 13.6rem;
+  min-height: 3.4rem;
+  padding: 0 1.4rem;
+  padding-right: 2.9rem;
+  background-color: $background;
+  color: $onBackground;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  transition: all 0.25s cubic-bezier(0.05, 0.7, 0.1, 1);
 
-    selection {
-        background-color: $secondary;
-        color: $onSecondary;
-    }
+  selection {
+    background-color: $secondary;
+    color: $onSecondary;
+  }
 
-    caret-color: transparent;
+  caret-color: transparent;
 }
 
 .overview-search-box-extended {
-    min-width: 25.909rem;
-    caret-color: $onSecondaryContainer;
+  min-width: 26rem;
+  caret-color: $onSecondaryContainer;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.18);
 }
 
 .overview-search-prompt {
-    color: $subtext;
+  color: $subtext;
+  opacity: 0.9;
+  font-size: 0.95rem;
+  letter-spacing: 0.02em;
 }
 
 .overview-search-icon {
-    margin: 0rem 1.023rem;
+  margin: 0 1rem;
+  transition: transform 0.2s ease;
 }
 
 .overview-search-prompt-box {
-    margin-left: -18.545rem;
-    margin-right: $elevation_margin + 0.068rem;
+  margin-left: -18.5rem;
+  margin-right: $elevation_margin + 0.07rem;
 }
 
 .overview-search-icon-box {
-    margin-left: -18.545rem;
-    margin-right: $elevation_margin + 0.068rem;
+  margin-left: -18.5rem;
+  margin-right: $elevation_margin + 0.07rem;
 }
 
 .overview-search-results {
-    // min-height: 2.813rem;
-    // min-height: 37.5rem;
-    @include large-rounding;
-    @include elevation-border;
-    @include elevation2;
-    min-width: 28.773rem;
-    padding: 0.682rem;
-    background-color: $layer0;
-    color: $onLayer0;
+  @include large-rounding;
+  @include elevation-border;
+  min-width: 28.8rem;
+  padding: 0.7rem;
+  background-color: $layer0;
+  color: $onLayer0;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.18);
+  transition: transform 0.2s cubic-bezier(0.05, 0.7, 0.1, 1);
 }
 
 .overview-search-results-icon {
-    margin: 0rem 0.682rem;
-    font-size: 2.386rem;
-    min-width: 2.386rem;
-    min-height: 2.386rem;
+  margin: 0 0.7rem;
+  font-size: 2.4rem;
+  min-width: 2.4rem;
+  min-height: 2.4rem;
 }
 
 .overview-search-results-txt {
-    margin-right: 0.682rem;
+  margin-right: 0.7rem;
 }
 
 .overview-search-results-txt-cmd {
-    margin-right: 0.682rem;
-    @include techfont;
-    font-size: 1.227rem;
+  margin-right: 0.7rem;
+  @include techfont;
+  font-size: 1.23rem;
 }
 
 .overview-search-result-btn {
-    @include normal-rounding;
-    padding: 0.341rem;
-    min-width: 2.386rem;
-    min-height: 2.386rem;
-
-    caret-color: transparent;
+  @include normal-rounding;
+  padding: 0.35rem;
+  min-width: 2.4rem;
+  min-height: 2.4rem;
+  transition: all 0.15s ease;
+  caret-color: transparent;
 }
 
 .overview-search-result-btn:hover,
 .overview-search-result-btn:focus {
-    background-color: $layer2;
+  background-color: $layer2;
+  transform: translateX(2px);
 }
 
 .overview-search-result-btn:active {
-    background-color: $layer2Hover;
+  background-color: $layer2Hover;
+  transform: translateX(0);
 }
 
 .overview-tasks {
-    @include large-rounding;
-    @include elevation-border;
-    @include elevation2;
-    padding: 0.341rem;
-    background-color: $background;
-    color: $onBackground;
+  @include large-rounding;
+  @include elevation-border;
+  padding: 0.35rem;
+  background-color: $background;
+  color: $onBackground;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
 }
 
 .overview-tasks-workspace {
-    @include normal-rounding;
-    // @include elevation-border;
-    margin: 0.341rem;
-    background-color: $layer1;
+  @include normal-rounding;
+  margin: 0.35rem;
+  background-color: $layer1;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  transition: transform 0.2s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+  }
 }
 
 .overview-tasks-workspace-number {
-    @include mainfont;
-    color: $onSurfaceVariant;
+  @include mainfont;
+  color: $onSurfaceVariant;
+  font-weight: 500;
+  font-size: 0.9rem;
+  padding: 0.2rem 0.5rem;
+  background-color: transparentize($surfaceVariant, 0.7);
+  border-radius: $rounding_small;
 }
 
 .overview-tasks-window {
-    @include normal-rounding;
-    @include menu_decel;
-    background-color: transparentize($layer3, 0.2);
-    color: $onSurface;
-    border: 0.068rem solid $surfaceContainerHighest;
+  @include normal-rounding;
+  @include menu_decel;
+  background-color: transparentize($layer3, 0.2);
+  color: $onSurface;
+  border: 1px solid $surfaceContainerHighest;
+  transition: all 0.2s cubic-bezier(0.05, 0.7, 0.1, 1);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
 }
 
 .overview-tasks-window:hover,
 .overview-tasks-window:focus {
-    background-color: transparentize($secondaryContainer, 0.3);
+  background-color: transparentize($secondaryContainer, 0.25);
+  transform: scale(1.02);
 }
 
 .overview-tasks-window:active {
-    background-color: transparentize($secondaryContainer, 0);
+  background-color: transparentize($secondaryContainer, 0);
+  transform: scale(0.98);
 }
 
 .overview-tasks-window-selected {
-    background-color: transparentize($secondaryContainer, 0.3);
+  background-color: transparentize($secondaryContainer, 0.25);
+  border: 1px solid $secondary;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
 }
 
 .overview-tasks-window-dragging {
-    opacity: 0.2;
+  opacity: 0.25;
+  transform: scale(1.05);
 }
